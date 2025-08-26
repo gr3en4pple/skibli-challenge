@@ -1,4 +1,3 @@
-// app/api/verify-otp/route.ts
 import { NextResponse } from "next/server";
 import {
   adminAuth,
@@ -48,6 +47,9 @@ export async function POST(req: Request) {
       user = await adminAuth.getUserByPhoneNumber(phone);
     } catch (error) {
       user = await adminAuth.createUser({ phoneNumber: phone });
+      if (user) {
+        await adminAuth.setCustomUserClaims(user.uid, { role: "owner" });
+      }
     }
 
     if (!user) {

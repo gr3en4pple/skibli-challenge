@@ -1,5 +1,4 @@
 "use server";
-import PhoneInput from "@/views/login/components/PhoneInput";
 
 const LoginPage = () => {
   return (
@@ -10,9 +9,7 @@ const LoginPage = () => {
             Sign In With Phone Number
           </h1>
 
-          <div className="flex justify-center">
-            <PhoneInput />
-          </div>
+          <div className="flex justify-center"></div>
         </div>
       </div>
     </div>

@@ -1,21 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import getMe from "./lib/api/auth/getMe";
 
-const authPaths = ["/auth/login", "/auth/register"];
-
-const verifySession = async ({
-  baseUrl,
-  session,
-}: {
-  baseUrl: string;
-  session: string;
-}) => {
-  return await fetch(`${baseUrl}/api/verify-session`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ session }),
-  });
-};
+const authPaths = ["/auth/login"];
 
 const redirectToLogin = (reqUrl: string) =>
   NextResponse.redirect(new URL("/auth/login", reqUrl));
@@ -29,15 +16,12 @@ export async function middleware(req: NextRequest) {
   if (authPaths.some((path) => pathname.startsWith(path))) {
     if (sessionCookie) {
       try {
-        const sessionResponse = await verifySession({
-          baseUrl: req.nextUrl.origin,
-          session: sessionCookie,
-        });
-        if (sessionResponse.status === 200) {
-          return NextResponse.redirect(new URL("/", req.url));
+        const sessionResponse = await getMe();
+        if (sessionResponse.success) {
+          return NextResponse.redirect(new URL("/dashboard", req.url));
         }
       } catch (error) {
-        console.error("authPaths verifySession failed:", error);
+        console.error("authPaths getMe failed:", error);
       }
     }
     return NextResponse.next();
@@ -49,12 +33,9 @@ export async function middleware(req: NextRequest) {
 
   // check session all pages except auth pages
   try {
-    const sessionResponse = await verifySession({
-      baseUrl: req.nextUrl.origin,
-      session: sessionCookie,
-    });
+    const sessionResponse = await getMe();
 
-    if (sessionResponse.status !== 200) {
+    if (sessionResponse.success) {
       return redirectToLogin(req.url);
     }
     return NextResponse.next();

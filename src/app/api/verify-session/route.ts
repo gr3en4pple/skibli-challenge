@@ -11,9 +11,10 @@ export async function POST(req: Request) {
       );
     }
 
-    await adminAuth.verifySessionCookie(session, true);
+    const decoded = await adminAuth.verifySessionCookie(session, true);
+
     return NextResponse.json(
-      { success: true, message: "Session valid" },
+      { success: true, message: "Session valid", user: decoded },
       { status: 200 },
     );
   } catch (err) {

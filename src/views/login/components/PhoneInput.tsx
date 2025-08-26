@@ -8,15 +8,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
+
 import { Input } from "@/components/ui/input";
 import { convertPhoneNumber, formatVisiblePhoneNumber } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoaderCircle, Send, Smartphone, Shield, Zap } from "lucide-react";
+import { LoaderCircle, Send, Smartphone } from "lucide-react";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
@@ -30,7 +26,7 @@ const formSchema = z.object({
 });
 
 const PhoneInput: React.FC = () => {
-  const { mutateAsync, isPending, isSuccess, status } = useSendSmsOTP();
+  const { mutateAsync, isPending } = useSendSmsOTP();
   const [showModalOtp, setModalOtp] = useState(false);
   const [phone, setPhone] = useState("");
 
@@ -63,7 +59,6 @@ const PhoneInput: React.FC = () => {
   return (
     <div className="mx-auto w-full max-w-md">
       <div className="bg-card border-border/50 rounded-2xl border p-8 shadow-xl backdrop-blur-sm">
-        {/* Header */}
         <div className="mb-8 text-center">
           <div className="from-primary/20 to-primary/10 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br">
             <Smartphone className="text-primary h-8 w-8" />

@@ -16,4 +16,6 @@ const app =
   getApps().length > 0 ? getApp() : initializeApp(firebaseClientConfig);
 const clientAuth = getAuth(app);
 
-export { clientAuth };
+
+
+export { clientAuth, Role };

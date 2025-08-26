@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/dialog";
 
 import { DialogProps } from "@radix-ui/react-dialog";
-import { REGEXP_ONLY_DIGITS } from "input-otp";
 import {
   InputOTP,
   InputOTPGroup,
@@ -37,8 +36,6 @@ const OtpInputDialog: React.FC<IOtpInputDialog> = ({
   const { mutateAsync: verifySmsOtp, isPending } = useVerifySmsOTP();
   const { mutateAsync: getAuthSession, isPending: isPendingAuthSession } =
     useGetSession();
-
-  const router = useRouter();
 
   const submitOtp = async (otp: string) => {
     try {
@@ -68,7 +65,7 @@ const OtpInputDialog: React.FC<IOtpInputDialog> = ({
           });
 
           if (success) {
-            router.push("/");
+            window.location.href = "/dashboard";
             toast.dismiss(signInToast);
             toast.success("Signed in successfully!");
           } else {

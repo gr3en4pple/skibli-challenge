@@ -1,4 +1,4 @@
-import { initializeApp, getApps, getApp, cert } from "firebase-admin/app";
+import { initializeApp, getApps, cert } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 
@@ -34,7 +34,7 @@ const adminAuth = getAuth(app);
 const adminDb = getFirestore(app);
 
 const CollectionNames = {
-  users: "users",
+  employees: "employees",
   otp_verifications: "otp_verifications",
 };
 
