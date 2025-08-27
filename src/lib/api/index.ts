@@ -46,7 +46,7 @@ class HttpClient {
   }
   post<T>(
     endpoint: string,
-    data: any,
+    data?: any,
     config?: AxiosRequestConfig,
   ): Promise<T> {
     return this._instance.post(endpoint, data, config);
@@ -54,7 +54,7 @@ class HttpClient {
   put<T>(endpoint: string, data: any, config?: AxiosRequestConfig): Promise<T> {
     return this._instance.put(endpoint, data, config);
   }
-  delete<T>(endpoint: string, config?: AxiosRequestConfig): Promise<T> {
+  delete<T>(endpoint: string,config?: AxiosRequestConfig): Promise<T> {
     return this._instance.delete(endpoint, config);
   }
 }

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import getMe from "./lib/api/auth/getMe";
 
-const authPaths = ["/auth/login"];
+const authPaths = ["/auth/login", "/auth/verify-email"];
 
 const redirectToLogin = (reqUrl: string) =>
   NextResponse.redirect(new URL("/auth/login", reqUrl));
@@ -16,8 +16,8 @@ export async function middleware(req: NextRequest) {
   if (authPaths.some((path) => pathname.startsWith(path))) {
     if (sessionCookie) {
       try {
-        const sessionResponse = await getMe();
-        if (sessionResponse.success) {
+        const user = await getMe();
+        if (user.success) {
           return NextResponse.redirect(new URL("/dashboard", req.url));
         }
       } catch (error) {
@@ -33,11 +33,12 @@ export async function middleware(req: NextRequest) {
 
   // check session all pages except auth pages
   try {
-    const sessionResponse = await getMe();
+    const user = await getMe();
 
-    if (sessionResponse.success) {
+    if (user.error) {
       return redirectToLogin(req.url);
     }
+
     return NextResponse.next();
   } catch (error) {
     return redirectToLogin(req.url);
@@ -45,5 +46,14 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/auth/:path*"],
+  matcher: [
+    // Root route
+    "/",
+    // Protected routes that require authentication
+    "/dashboard/:path*",
+    "/chat/:path*",
+    "/tasks/:path*",
+    // Auth routes to redirect logged-in users
+    "/auth/:path*",
+  ],
 };

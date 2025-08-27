@@ -19,3 +19,8 @@ export const convertPhoneNumber = (phone: string, countryCode = "+84") => {
 
   return countryCode + phone;
 };
+
+export const firestoreTimestampToDate = (timestamp: {
+  _seconds: number;
+  _nanoseconds: number;
+}) => new Date(timestamp._seconds * 1000 + timestamp._nanoseconds / 1e6);

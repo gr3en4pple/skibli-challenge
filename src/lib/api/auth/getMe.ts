@@ -9,11 +9,11 @@ const getMe = async () => {
       "Content-Type": "application/json",
       Cookie: `session=${sessionCookie}`,
     },
+    cache: "no-cache",
     credentials: "include",
   });
 
   const user = await res.json();
-  console.log('user:', user)
 
   return user;
 };

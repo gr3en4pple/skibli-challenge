@@ -13,33 +13,49 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PlusIcon } from "lucide-react";
+import { LoaderCircle, PlusIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import PhoneInput from "./PhoneInput";
 import NameInput from "./NameInput";
 import EmailInput from "./EmailInput";
+import useCreateEmployee from "@/views/dashboard/hooks/useCreateEmployee";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  convertPhoneNumber,
+  formatVisiblePhoneNumber,
+} from "@/lib/utils/index";
 
 const formSchema = z.object({
   name: z
     .string()
-    .min(2, "Name's length must be >= 2 characters")
-    .max(100, "Name's length must be <= 100 characters"),
+    .min(5, "Name length must be >= 5 characters")
+    .max(30, "Name length must be <= 30 characters")
+    .optional(),
   phone: z
     .string()
-    .regex(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g, "Phone number is invalid format"),
+    .regex(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g, "Phone number is invalid format")
+    .optional(),
   email: z.email("Invalid email address"),
   role: z.string(),
 });
 
-const CreateEmployeeModal = () => {
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, "").slice(0, 10);
-    form.setValue("phone", value);
-  };
+const CreateEmployeeModal = ({
+  initValue,
+  onToggle,
+  open,
+}: {
+  onToggle: (open: boolean) => void;
+  open: boolean;
+  initValue?: { name: string; email: string; phone: string; role: string };
+}) => {
+  const queryClient = useQueryClient();
+  const { mutateAsync: createEmployee, isPending } = useCreateEmployee();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: initValue || {
       name: "",
       email: "",
       phone: "",
@@ -49,13 +65,34 @@ const CreateEmployeeModal = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
+      // const formatVisiblePhoneNumber =
+      const res = await createEmployee({
+        email: values.email,
+        phone: values.phone ? convertPhoneNumber(values.phone) : "",
+        name: values.name,
+      });
+      if (res.success) {
+        queryClient.invalidateQueries({
+          queryKey: ["getEmployees"],
+        });
+        toast.success("Create employee successfully!", {
+          position: "top-right",
+        });
+        form.reset();
+      }
     } catch (error) {
       console.log("error:", error);
     }
   };
 
   return (
-    <Sheet onOpenChange={() => form.reset()}>
+    <Sheet
+      open={open}
+      onOpenChange={(open) => {
+        onToggle(open);
+        form.reset();
+      }}
+    >
       <SheetTrigger asChild>
         <Button variant="destructive">
           <PlusIcon />
@@ -77,11 +114,14 @@ const CreateEmployeeModal = () => {
           >
             <NameInput form={form} />
             <PhoneInput form={form} />
-            <EmailInput form={form} />
+            <EmailInput disabled={Boolean(initValue)} form={form} />
             <div className="mt-auto mb-4 flex w-full flex-col space-y-2">
-              <Button type="submit" variant="destructive">Create</Button>
+              <Button disabled={isPending} type="submit" variant="destructive">
+                Create
+                {isPending && <LoaderCircle className="h-4 w-4 animate-spin" />}
+              </Button>
               <SheetClose asChild>
-                <Button variant="outline" type="button">
+                <Button disabled={isPending} variant="outline" type="button">
                   Close
                 </Button>
               </SheetClose>

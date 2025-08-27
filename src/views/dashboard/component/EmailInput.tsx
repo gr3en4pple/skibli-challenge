@@ -12,9 +12,10 @@ import React from "react";
 
 interface IEmailInput {
   form: CreateEmployeeFormType;
+  disabled?: boolean;
 }
 
-const EmailInput: React.FC<IEmailInput> = ({ form }) => {
+const EmailInput: React.FC<IEmailInput> = ({ form, disabled }) => {
   return (
     <FormField
       control={form.control}
@@ -29,7 +30,9 @@ const EmailInput: React.FC<IEmailInput> = ({ form }) => {
               <Input
                 placeholder="Enter employee email"
                 {...field}
-                className="h-10 text-base transition-all duration-200 rounded-lg border-border/50 focus:border-primary/50 focus:ring-primary/20 bg-background/50 backdrop-blur-sm focus:ring-2"
+                readOnly
+                // /={disabled}
+                className="h-10 text-base transition-all duration-200 rounded-lg read-only:pointer-events-none read-only:opacity-50 border-border/50 focus:border-primary/50 focus:ring-primary/20 bg-background/50 backdrop-blur-sm focus:ring-2"
               />
             </div>
           </FormControl>

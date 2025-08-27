@@ -4,17 +4,17 @@ import { Timestamp } from "firebase-admin/firestore";
 export interface CreateEmployeeFormType
   extends UseFormReturn<
     {
-      name: string;
-      phone: string;
       email: string;
       role: string;
+      name?: string;
+      phone?: string;
     },
     any,
     {
-      name: string;
-      phone: string;
       email: string;
       role: string;
+      name?: string;
+      phone?: string;
     }
   > {}
 
@@ -23,4 +23,13 @@ export interface CreateEmployeeParams {
   email: string;
   phone?: string;
   role: "employee" | "owner";
+}
+
+export interface Employee {
+  uid:string
+  email: string;
+  hasAccount: boolean;
+  name?: string;
+  phone?: string;
+  role: "employee";
 }

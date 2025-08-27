@@ -2,13 +2,10 @@
 import React, { useState } from "react";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 
 import { DialogProps } from "@radix-ui/react-dialog";
@@ -19,31 +16,33 @@ import {
 } from "@/components/ui/input-otp";
 import useVerifyOTP from "@/hooks/useVerifyOTP";
 import { toast } from "sonner";
+
 interface IOtpInputDialog extends DialogProps {
-  phone: string;
+  formData: { email: string; password: string };
 }
 
 const OtpInputDialog: React.FC<IOtpInputDialog> = ({
   open,
   onOpenChange,
-  phone,
+  formData,
 }) => {
   const [otp, setOtp] = useState("");
-  const { mutateAsync: verifySmsOtp, isPending } = useVerifyOTP();
+  const { mutateAsync: verifyOtp, isPending } = useVerifyOTP();
 
   const submitOtp = async (otp: string) => {
     try {
       const verifyingOtpToast = toast.loading("Verifying OTP...");
 
-      const verifySms = await verifySmsOtp({
-        phone,
+      const verifyRes = await verifyOtp({
+        email: formData.email,
+        password: formData.password,
         otp,
       });
 
       toast.dismiss(verifyingOtpToast);
       const successOtpToast = toast.success("OTP verified successfully!");
-      if (verifySms.success) {
-        window.location.href = "/dashboard";
+      if (verifyRes.success) {
+        window.location.href = "/tasks";
         toast.dismiss(successOtpToast);
         toast.success("Signed in successfully!");
       } else {
@@ -69,9 +68,11 @@ const OtpInputDialog: React.FC<IOtpInputDialog> = ({
     <Dialog open={open} onOpenChange={isPending ? undefined : onOpenChange}>
       <DialogContent className="max-w-[320px] gap-0 rounded-xl">
         <DialogHeader className="mb-6">
-          <DialogTitle className="text-xl font-semibold">SMS OTP </DialogTitle>
+          <DialogTitle className="text-xl font-semibold">
+            Email OTP{" "}
+          </DialogTitle>
           <DialogDescription className="">
-            Submit your SMS OTP to login
+            Submit your Email OTP to login
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col items-center justify-center space-y-2">

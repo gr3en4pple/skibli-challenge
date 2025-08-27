@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal, PlusIcon } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal, Phone, PlusIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -33,68 +33,28 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import CreateEmployee from "./component/CreateEmployee";
+import useGetEmployees from "@/views/dashboard/hooks/useGetEmployees";
+import { Employee } from "@/types/employee.type";
+import DeleteEmployee from "./component/DeleteEmployee";
 
-const data: Payment[] = [
+export const columns: ColumnDef<Employee>[] = [
   {
-    id: "m5gr84i9",
-    amount: 316,
-    status: "success",
-    email: "ken99@example.com",
-  },
-  {
-    id: "3u1reuv4",
-    amount: 242,
-    status: "success",
-    email: "Abe45@example.com",
-  },
-  {
-    id: "derv1ws0",
-    amount: 837,
-    status: "processing",
-    email: "Monserrat44@example.com",
-  },
-  {
-    id: "5kma53ae",
-    amount: 874,
-    status: "success",
-    email: "Silas22@example.com",
-  },
-  {
-    id: "bhqecj4p",
-    amount: 721,
-    status: "failed",
-    email: "carmella@example.com",
-  },
-];
-
-export type Payment = {
-  id: string;
-  amount: number;
-  status: "pending" | "processing" | "success" | "failed";
-  email: string;
-};
-
-export const columns: ColumnDef<Payment>[] = [
-  {
-    id: "select",
+    id: "name",
     header: ({ table }) => <div>Name</div>,
-    cell: ({ row }) => <div>haha</div>,
+    cell: ({ row }) => {
+      return <div>{row.original?.name || ""}</div>;
+    },
     enableSorting: false,
     enableHiding: false,
   },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("status")}</div>
-    ),
-  },
+
   {
     accessorKey: "email",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
+          className="!px-0"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Email
@@ -105,11 +65,25 @@ export const columns: ColumnDef<Payment>[] = [
     cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
   },
   {
+    accessorKey: "phone",
+    header: ({ column }) => {
+      return (
+        <div className="flex items-center space-x-1">
+          <Phone size={16} />
+          <span>Phone</span>
+        </div>
+      );
+    },
+    cell: ({ row }) => (
+      <div className="lowercase">{row.getValue("phone") || ""}</div>
+    ),
+  },
+  {
     id: "actions",
     enableHiding: false,
     header: "Actions",
     cell: ({ row }) => {
-      const payment = row.original;
+      const employee = row.original;
 
       return (
         <DropdownMenu>
@@ -122,12 +96,12 @@ export const columns: ColumnDef<Payment>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuItem
               className="cursor-pointer"
-              onClick={() => navigator.clipboard.writeText(payment.id)}
+              onClick={() => row.toggleSelected(!row.getIsSelected())}
             >
               Edit Employee
             </DropdownMenuItem>
             <DropdownMenuItem className="cursor-pointer">
-              Delete Employee
+              <DeleteEmployee employee={employee} />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -141,12 +115,22 @@ const Dashboard = () => {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+
+  const { data: employees } = useGetEmployees();
+  const [showEmployeeDetail, setShowEmployeeDetail] = React.useState(false);
   const [rowSelection, setRowSelection] = React.useState({});
 
+  const selectedRow = React.useMemo(() => {
+    const row = Object.keys(rowSelection).find(
+      (key) => (rowSelection as any)?.[key],
+    );
+    if (row) {
+      setShowEmployeeDetail(true);
+    }
+    return row;
+  }, [rowSelection]);
   const table = useReactTable({
-    data,
+    data: employees?.data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -154,15 +138,17 @@ const Dashboard = () => {
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     state: {
       sorting,
       columnFilters,
-      columnVisibility,
       rowSelection,
     },
   });
+
+  const initEmployeeValue = React.useMemo(() => {
+    return selectedRow ? employees?.data?.[+selectedRow] : undefined;
+  }, [selectedRow, employees]);
 
   return (
     <div className="w-full">
@@ -175,7 +161,13 @@ const Dashboard = () => {
           }
           className="max-w-xs"
         />
-        <CreateEmployee />
+        {/* {showEmployeeDetail && ( */}
+          <CreateEmployee
+            onToggle={setShowEmployeeDetail}
+            open={showEmployeeDetail}
+            initValue={initEmployeeValue}
+          />
+        {/* // )} */}
       </div>
       <div className="rounded-md border">
         <Table>

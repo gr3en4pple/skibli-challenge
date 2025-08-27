@@ -10,9 +10,9 @@ const ProtectedLayout: React.FC<PropsWithChildren> = async ({ children }) => {
   if (!user) redirect("/auth/login");
   
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="mt-16 flex min-h-[calc(100vh-64px)] bg-gray-50">
       <Sidebar />
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 overflow-auto ml-[255px]">
         {children}
       </main>
     </div>

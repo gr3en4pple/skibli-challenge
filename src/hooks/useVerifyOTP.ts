@@ -1,24 +1,26 @@
 import { useMutation } from "@tanstack/react-query";
 import api from "@/lib/api";
 
-interface IVerifySmsOTP {
+interface IVerifyOTP {
   otp: string;
-  phone: string;
+  phone?: string;
+  email?: string;
+  password?: string;
 }
 
-interface IVerifySmsOTPResponse {
+interface IVerifyOTPResponse {
   message?: string;
   token?: string;
   error?: boolean;
   success?: boolean;
 }
-const useVerifySmsOTP = () => {
+const useVerifyOTP = () => {
   return useMutation({
-    mutationKey: ["verifySmsOTP"],
-    mutationFn: async (data: IVerifySmsOTP): Promise<IVerifySmsOTPResponse> => {
+    mutationKey: ["verifyOTP"],
+    mutationFn: async (data: IVerifyOTP): Promise<IVerifyOTPResponse> => {
       try {
         const { error, message, success, token } =
-          await api.post<IVerifySmsOTPResponse>("/verify-sms-otp", data);
+          await api.post<IVerifyOTPResponse>("/verify-otp", data);
 
         if (error) {
           return { error, message };
@@ -35,4 +37,4 @@ const useVerifySmsOTP = () => {
   });
 };
 
-export default useVerifySmsOTP;
+export default useVerifyOTP;

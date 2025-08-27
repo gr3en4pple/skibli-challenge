@@ -1,18 +1,19 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import api from "@/lib/api";
-import { UserRecord } from "firebase-admin/auth";
 import React, { useMemo, useState } from "react";
 import { User, Phone, Mail, LogOut, Shield } from "lucide-react";
 import { Role } from "@/config";
+import { IUser } from "@/types/index.type";
 
-const UserProfile = ({ user }: { user: UserRecord }) => {
+const UserProfile = ({ user }: { user: IUser }) => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
-      const response = await api.delete<any>("/logout");
+      const response = await api.post<any>("/logout");
+      console.log("response:", response);
       if (response?.success) {
         window.location.href = "/auth/login";
       }
@@ -24,7 +25,7 @@ const UserProfile = ({ user }: { user: UserRecord }) => {
   };
 
   const displayName =
-    user.displayName ||
+    user.username ||
     user.email?.split("@")[0] ||
     user.phone?.replace("+84", "0") ||
     Role.EMPLOYEE;
