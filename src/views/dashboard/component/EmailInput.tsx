@@ -6,7 +6,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { formatVisiblePhoneNumber } from "@/lib/utils";
+import { cn, formatVisiblePhoneNumber } from "@/lib/utils";
 import { CreateEmployeeFormType } from "@/types/employee.type";
 import React from "react";
 
@@ -22,17 +22,22 @@ const EmailInput: React.FC<IEmailInput> = ({ form, disabled }) => {
       name="email"
       render={({ field }) => (
         <FormItem>
-          <FormLabel className="text-sm font-medium text-foreground">
+          <FormLabel className="text-foreground text-sm font-medium">
             Email
           </FormLabel>
           <FormControl>
             <div className="relative">
               <Input
                 placeholder="Enter employee email"
+                // readOnly={disabled}
                 {...field}
-                readOnly
-                // /={disabled}
-                className="h-10 text-base transition-all duration-200 rounded-lg read-only:pointer-events-none read-only:opacity-50 border-border/50 focus:border-primary/50 focus:ring-primary/20 bg-background/50 backdrop-blur-sm focus:ring-2"
+                className={cn(
+                  "border-border/50 focus:border-primary/50 focus:ring-primary/20 bg-background/50 h-10 rounded-lg text-base backdrop-blur-sm transition-all duration-200 focus:ring-2",
+                  {
+                    "read-only:pointer-events-none read-only:opacity-50":
+                      disabled,
+                  },
+                )}
               />
             </div>
           </FormControl>

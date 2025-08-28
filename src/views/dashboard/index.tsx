@@ -37,6 +37,8 @@ import useGetEmployees from "@/views/dashboard/hooks/useGetEmployees";
 import { Employee } from "@/types/employee.type";
 import DeleteEmployee from "./component/DeleteEmployee";
 
+const EditEmployee = CreateEmployee;
+
 export const columns: ColumnDef<Employee>[] = [
   {
     id: "name",
@@ -52,13 +54,8 @@ export const columns: ColumnDef<Employee>[] = [
     accessorKey: "email",
     header: ({ column }) => {
       return (
-        <Button
-          variant="ghost"
-          className="!px-0"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
+        <Button variant="ghost" className="!px-0">
           Email
-          <ArrowUpDown />
         </Button>
       );
     },
@@ -147,27 +144,25 @@ const Dashboard = () => {
   });
 
   const initEmployeeValue = React.useMemo(() => {
-    return selectedRow ? employees?.data?.[+selectedRow] : undefined;
+    const result = selectedRow ? employees?.data?.[+selectedRow] : undefined;
+    if (result && result?.phone) {
+      result.phone = result.phone.replace("+84", "0");
+    }
+    return result;
   }, [selectedRow, employees]);
 
   return (
     <div className="w-full">
       <div className="flex items-center justify-end gap-2 py-4">
-        <Input
-          placeholder="Search employee name, email..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
-          }
-          className="max-w-xs"
-        />
-        {/* {showEmployeeDetail && ( */}
-          <CreateEmployee
+        <CreateEmployee />
+
+        {showEmployeeDetail && (
+          <EditEmployee
             onToggle={setShowEmployeeDetail}
             open={showEmployeeDetail}
             initValue={initEmployeeValue}
           />
-        {/* // )} */}
+        )}
       </div>
       <div className="rounded-md border">
         <Table>

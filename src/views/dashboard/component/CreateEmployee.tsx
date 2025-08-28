@@ -26,7 +26,8 @@ import {
   convertPhoneNumber,
   formatVisiblePhoneNumber,
 } from "@/lib/utils/index";
-
+import isDeepEqual from "deep-equal";
+import useEditEmployee from "../hooks/useEditEmployee";
 const formSchema = z.object({
   name: z
     .string()
@@ -46,12 +47,14 @@ const CreateEmployeeModal = ({
   onToggle,
   open,
 }: {
-  onToggle: (open: boolean) => void;
-  open: boolean;
+  onToggle?: (open: boolean) => void;
+  open?: boolean;
   initValue?: { name: string; email: string; phone: string; role: string };
 }) => {
   const queryClient = useQueryClient();
   const { mutateAsync: createEmployee, isPending } = useCreateEmployee();
+  const { mutateAsync: editEmployee, isPending: isPendingEditEmployee } =
+    useEditEmployee();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -63,19 +66,28 @@ const CreateEmployeeModal = ({
     },
   });
 
+  const isEdit = Boolean(initValue);
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      // const formatVisiblePhoneNumber =
-      const res = await createEmployee({
-        email: values.email,
-        phone: values.phone ? convertPhoneNumber(values.phone) : "",
-        name: values.name,
-      });
+      const res = isEdit
+        ? await editEmployee({
+            id: (initValue as any)?.uid,
+            phone: values.phone ? convertPhoneNumber(values.phone) : "",
+            name: values.name,
+            email: initValue?.email as string,
+          })
+        : await createEmployee({
+            email: values.email,
+            phone: values.phone ? convertPhoneNumber(values.phone) : "",
+            name: values.name,
+          });
       if (res.success) {
+        onToggle?.(false);
         queryClient.invalidateQueries({
           queryKey: ["getEmployees"],
         });
-        toast.success("Create employee successfully!", {
+        toast.success(`${isEdit ? "Edit" : "Create"} employee successfully!`, {
           position: "top-right",
         });
         form.reset();
@@ -89,7 +101,7 @@ const CreateEmployeeModal = ({
     <Sheet
       open={open}
       onOpenChange={(open) => {
-        onToggle(open);
+        onToggle?.(open);
         form.reset();
       }}
     >
@@ -101,9 +113,10 @@ const CreateEmployeeModal = ({
       </SheetTrigger>
       <SheetContent>
         <SheetHeader>
-          <SheetTitle>Create employee</SheetTitle>
+          <SheetTitle>{isEdit ? "Edit" : "Create"} Employee</SheetTitle>
           <SheetDescription>
-            Create an employee by filling out the form below.
+            {isEdit ? "Edit" : "Create"} an employee by filling out the form
+            below.
           </SheetDescription>
         </SheetHeader>
 
@@ -116,9 +129,15 @@ const CreateEmployeeModal = ({
             <PhoneInput form={form} />
             <EmailInput disabled={Boolean(initValue)} form={form} />
             <div className="mt-auto mb-4 flex w-full flex-col space-y-2">
-              <Button disabled={isPending} type="submit" variant="destructive">
-                Create
-                {isPending && <LoaderCircle className="h-4 w-4 animate-spin" />}
+              <Button
+                disabled={isPending || isPendingEditEmployee}
+                type="submit"
+                variant="destructive"
+              >
+                {isEdit ? "Edit" : "Create"}
+                {(isPending || isPendingEditEmployee) && (
+                  <LoaderCircle className="h-4 w-4 animate-spin" />
+                )}
               </Button>
               <SheetClose asChild>
                 <Button disabled={isPending} variant="outline" type="button">

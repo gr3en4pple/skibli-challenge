@@ -11,6 +11,7 @@ interface IEditData {
   id: string;
   phone?: string;
   name?: string;
+  email: string;
 }
 
 const useEditEmployee = () => {
@@ -20,12 +21,14 @@ const useEditEmployee = () => {
       id,
       name,
       phone,
+      email,
     }: IEditData): Promise<IEditEmployeeResponse> => {
       try {
         const { error, message, success } =
           await api.put<IEditEmployeeResponse>(`/employee/${id}`, {
             name,
             phone,
+            email,
           });
 
         if (error) {

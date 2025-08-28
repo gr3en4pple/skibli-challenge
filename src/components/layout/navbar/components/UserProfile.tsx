@@ -5,6 +5,7 @@ import React, { useMemo, useState } from "react";
 import { User, Phone, Mail, LogOut, Shield } from "lucide-react";
 import { Role } from "@/config";
 import { IUser } from "@/types/index.type";
+import { getInitialsUserName } from "../../../../lib/utils/index";
 
 const UserProfile = ({ user }: { user: IUser }) => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -50,11 +51,15 @@ const UserProfile = ({ user }: { user: IUser }) => {
   return (
     <div className="space-y-6">
       <div className="flex items-center space-x-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600">
-          <User className="h-6 w-6 text-white" />
+        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
+          {user.role === "owner" ? (
+            <User />
+          ) : (
+            getInitialsUserName(user?.username || user?.email || "")
+          )}
         </div>
         <div>
-          <p className="truncate font-semibold">{displayName}</p>
+          <p className="font-semibold truncate">{displayName}</p>
           {user?.role && (
             <p className="text-sm text-gray-500 capitalize">{user?.role}</p>
           )}
@@ -67,11 +72,11 @@ const UserProfile = ({ user }: { user: IUser }) => {
           return (
             <div
               key={contact.name}
-              className="flex items-center space-x-3 rounded-lg bg-gray-50 p-2 text-gray-500"
+              className="flex items-center p-2 space-x-3 text-gray-500 rounded-lg bg-gray-50"
             >
-              <Icon className="h-4 w-4 flex-shrink-0" />
+              <Icon className="flex-shrink-0 w-4 h-4" />
               <div className="">
-                <p className="text-primary truncate text-sm font-semibold">
+                <p className="text-sm font-semibold truncate text-primary">
                   {contact.value}
                 </p>
                 <p className="text-xs">{contact.name}</p>
@@ -87,7 +92,7 @@ const UserProfile = ({ user }: { user: IUser }) => {
         className="w-full py-4 font-semibold"
         variant="destructive"
       >
-        <LogOut className="mr-2 h-4 w-4" />
+        <LogOut className="w-4 h-4 mr-2" />
         Log Out
       </Button>
     </div>

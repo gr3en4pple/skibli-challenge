@@ -20,6 +20,15 @@ export const convertPhoneNumber = (phone: string, countryCode = "+84") => {
   return countryCode + phone;
 };
 
+export const getInitialsUserName = (name: string) => {
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+};
+
 export const firestoreTimestampToDate = (timestamp: {
   _seconds: number;
   _nanoseconds: number;
