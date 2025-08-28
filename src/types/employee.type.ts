@@ -1,5 +1,4 @@
 import { UseFormReturn } from "react-hook-form";
-import { Timestamp } from "firebase-admin/firestore";
 
 export interface CreateEmployeeFormType
   extends UseFormReturn<

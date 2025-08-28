@@ -1,36 +1,113 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Skipli - Task Management Platform
 
-## Getting Started
+## 🚀 Tech Stack
 
-First, run the development server:
+- **Framework**: Next.js 15 with App Router
+- **Styling**: Tailwind CSS + shadcn/ui components
+- **Forms**: React Hook Form with Zod validation
+- **State Management**: TanStack Query for server state
+- **Database**: Firebase Firestore
+- **Real-time**: Socket.io (for upcoming chat feature)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 📁 Project Structure
+
+```
+src/
+├── app/                  # App Router
+│   ├── (protected)/      # Authentication routes
+│   │   ├── chat/         # Chat feature (coming soon)
+│   │   ├── dashboard/    # Owner dashboard
+│   │   ├── tasks/        # Task management
+│   │   └── layout.tsx    # Protected layout with auth check
+│   ├── (public)/         # Public routes
+│   │   └── auth/         # Authentication pages (login,login-email,verify-email)        
+├── components/           # App components
+│   ├── layout/           # Layout components (navbar, sidebar)
+│   ├── ui/               # shadcn/ui components
+│   └── providers/        # providers
+├── hooks/                # Custom React hooks, React Query hooks
+├── lib/                 
+│   ├── api/             # API client functions
+│   ├── firebase/        # Firebase configuration
+│   └── utils/           # Helper functions
+├── types/               # TypeScript type definitions
+└── views/               # Page-specific components and logic
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🔐 Authentication & Authorization
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The app uses middleware to handle authentication and role-based routing:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Not logged in**: Redirected to `/auth/login`
+- **Owner role**: Redirected to `/dashboard`
+- **Employee role**: Redirected to `/tasks`
 
-## Learn More
+### Authentication Methods
+- Phone number with SMS OTP verification
+- Email and password login with Email OTP verification
+- Email verification link for new accounts
 
-To learn more about Next.js, take a look at the following resources:
+## 👥 User Roles & Features
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Owner && Employee
+- **Profile**: Access to personal information (phone, username, email, UID, role)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Owner
+- **Employee Management**: Add, edit, remove and manage all employees
+- **Task Assignment**: Create and assign tasks to employees
 
-## Deploy on Vercel
+### Employee
+- **Tasks**: View assigned tasks from owner, Update task status and progress
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🎯 Key Features
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Current Features
+- ✅ Role-based authentication and authorization
+- ✅ Employee management (Owner only)
+- ✅ Task creation and assignment
+- ✅ Kanban board for task visualization
+- ✅ Form validation with React Hook Form
+- ✅ Data fetching with React Query
+
+### Coming Soon
+- 💬 Real-time chat feature
+
+## 🛠️ Development
+
+### Prerequisites
+- Node.js 18+ 
+- pnpm
+
+### Installation
+
+```bash
+# Clone the repository
+cd skipli
+
+# Install dependencies
+pnpm install
+
+# Set up environment variables
+cp .env.example .env.local
+
+# Start development server
+pnpm dev
+```
+
+### Environment Variables
+
+Create a `.env.local` file with the following variables:
+
+```env
+NEXT_PUBLIC_API_ENDPOINT=http://localhost:3001/api
+```
+
+### Available Scripts
+
+```bash
+pnpm dev         
+pnpm build        
+pnpm start      
+pnpm lint         
+```
+
