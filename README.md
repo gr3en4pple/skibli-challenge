@@ -27,10 +27,9 @@ src/
 │   └── providers/        # providers
 ├── hooks/                # Custom React hooks, React Query hooks
 ├── lib/                 
-│   ├── api/             # API client functions
-│   ├── firebase/        # Firebase configuration
+│   ├── api/             # Resuable API functions
 │   └── utils/           # Helper functions
-├── types/               # TypeScript type definitions
+├── types/               # Type definitions
 └── views/               # Page-specific components and logic
 ```
 

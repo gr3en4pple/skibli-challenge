@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/input-otp";
 import useVerifyOTP from "@/hooks/useVerifyOTP";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface IOtpInputDialog extends DialogProps {
   formData: { email: string; password: string };
@@ -27,36 +28,42 @@ const OtpInputDialog: React.FC<IOtpInputDialog> = ({
   formData,
 }) => {
   const [otp, setOtp] = useState("");
+  const [isError, setError] = useState(false);
   const { mutateAsync: verifyOtp, isPending } = useVerifyOTP();
 
   const submitOtp = async (otp: string) => {
     try {
-      const verifyingOtpToast = toast.loading("Verifying OTP...");
-
       const verifyRes = await verifyOtp({
         email: formData.email,
         password: formData.password,
         otp,
       });
 
-      toast.dismiss(verifyingOtpToast);
-      const successOtpToast = toast.success("OTP verified successfully!");
       if (verifyRes.success) {
+        const successOtpToast = toast.success("OTP verified successfully!");
         window.location.href = "/tasks";
         toast.dismiss(successOtpToast);
         toast.success("Signed in successfully!");
       } else {
-        toast.warning("Failed to create session. Please try again.");
+        toast.warning(
+          verifyRes?.message || "Failed to login. Please try again",
+        );
+        setError(true);
       }
+
+      setOtp("");
     } catch (error: any) {
       toast.warning(
         error?.message || "Authentication failed. Please try again.",
       );
+      setError(true);
     }
   };
 
   const onChange = async (value: string) => {
     if (value === "" || new RegExp("^\\d+$").test(value)) {
+      setError(false);
+
       setOtp(value);
       if (value.length === 6) {
         await submitOtp(value);
@@ -83,16 +90,17 @@ const OtpInputDialog: React.FC<IOtpInputDialog> = ({
             onChange={onChange}
           >
             <InputOTPGroup>
-              <InputOTPSlot index={0} />
-              <InputOTPSlot index={1} />
-              <InputOTPSlot index={2} />
-              <InputOTPSlot index={3} />
-              <InputOTPSlot index={4} />
-              <InputOTPSlot index={5} />
+              {[...Array(6).keys()].map((index) => (
+                <InputOTPSlot
+                  key={index}
+                  className={cn({ "border-red-500": isError })}
+                  index={index}
+                />
+              ))}
             </InputOTPGroup>
           </InputOTP>
           <div className="text-primary text-center text-sm">
-            Enter your one-time password.
+            Enter your OTP code
           </div>
         </div>
       </DialogContent>
