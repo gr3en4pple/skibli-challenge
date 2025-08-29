@@ -35,7 +35,7 @@ const NavigationLinks: React.FC<INavigations> = ({ role }) => {
   );
 
   return navigations.map((item) => {
-    const isActive = pathname === item.href;
+    const isActive = pathname.includes(item.href);
     const Icon = item.icon;
     return (
       <Link

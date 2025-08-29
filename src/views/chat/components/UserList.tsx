@@ -1,19 +1,23 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import { IUser } from "@/types/index.type";
-import { Loader2, LoaderCircle, User, Users } from "lucide-react";
+import { LoaderCircle, User, Users } from "lucide-react";
 import useGetChatMembers from "../hooks/useGetChatMembers";
+import { Socket } from "socket.io-client";
+import { getSocket, disconnectSocket } from "@/lib/socket";
+import Link from "next/link";
+import useRoomId from "../hooks/useRoomId";
+import useChatSocket from "@/hooks/useChatSocket";
 
 interface IUserList {
-  setSelectedUser: React.Dispatch<React.SetStateAction<IUser | null>>;
-  selectedUser: IUser | null;
   currentUser: IUser;
 }
 
-const UserList = ({
-  currentUser,
-  selectedUser,
-  setSelectedUser,
-}: IUserList) => {
+const UserList = ({ currentUser }: IUserList) => {
+  const { currentUserUid, roomId, selectedUserUid } = useRoomId(
+    currentUser?.uid,
+  );
+  const chatSocket = useChatSocket();
   const { data, isLoading } = useGetChatMembers();
 
   const members = data?.data || [];
@@ -51,14 +55,14 @@ const UserList = ({
               const isOwner = user?.role === "owner";
 
               return (
-                <div
+                <Link
+                  href={`/chat/${currentUser?.uid}_${user?.uid}`}
                   key={user?.uid}
                   className={`flex cursor-pointer items-center gap-3 rounded-lg p-3 transition-colors ${
-                    selectedUser?.uid === user?.uid
+                    selectedUserUid === user?.uid
                       ? "bg-primary/10 border-primary/20 border"
                       : "hover:bg-muted/50"
                   }`}
-                  onClick={() => setSelectedUser(user)}
                 >
                   <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
                     {isOwner ? <User /> : getInitials(userDisplayName)}
@@ -78,7 +82,7 @@ const UserList = ({
                       {user.email}
                     </p>
                   </div>
-                </div>
+                </Link>
               );
             })
           )}

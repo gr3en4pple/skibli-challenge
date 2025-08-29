@@ -18,6 +18,7 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 import useSendSmsOTP from "../hooks/useSendSmsOTP";
 import OtpInputDialog from "./OtpInputDialog";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   phone: z
@@ -50,21 +51,24 @@ const LoginWithPhone: React.FC = () => {
         setModalOtp(true);
         setPhone(phoneFormat);
         form.reset();
+      } else {
+        toast.warning(res?.message || "Something Wrong");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log("error:", error);
+      toast.warning(error?.message || "Something Wrong");
     }
   };
 
   return (
     <div className="">
-      <div className="p-8 border shadow-xl bg-card border-border/50 rounded-2xl backdrop-blur-sm">
+      <div className="bg-card border-border/50 rounded-2xl border p-8 shadow-xl backdrop-blur-sm">
         <div className="mb-8 text-center">
-          <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 from-primary/20 to-primary/10 rounded-2xl bg-gradient-to-br">
-            <Smartphone className="w-8 h-8 text-primary" />
+          <div className="from-primary/20 to-primary/10 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br">
+            <Smartphone className="text-primary h-8 w-8" />
           </div>
 
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Login via SMS OTP code
           </p>
         </div>
@@ -77,7 +81,7 @@ const LoginWithPhone: React.FC = () => {
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium text-foreground">
+                  <FormLabel className="text-foreground text-sm font-medium">
                     Phone Number
                   </FormLabel>
                   <FormControl>
@@ -88,7 +92,7 @@ const LoginWithPhone: React.FC = () => {
                         prefix={<div>+84</div>}
                         disabled={isPending}
                         value={formatVisiblePhoneNumber(field.value)}
-                        className="h-12 pr-16 text-base transition-all duration-200 border-border/50 focus:border-primary/50 focus:ring-primary/20 bg-background/50 rounded-xl backdrop-blur-sm focus:ring-2"
+                        className="border-border/50 focus:border-primary/50 focus:ring-primary/20 bg-background/50 h-12 rounded-xl pr-16 text-base backdrop-blur-sm transition-all duration-200 focus:ring-2"
                         onChange={onChange}
                       />
 
@@ -96,12 +100,12 @@ const LoginWithPhone: React.FC = () => {
                         variant="default"
                         type="submit"
                         disabled={isPending}
-                        className="absolute w-8 h-8 transition-all duration-200 -translate-y-1/2 rounded-lg bg-primary hover:bg-primary/90 top-1/2 right-2 disabled:opacity-50"
+                        className="bg-primary hover:bg-primary/90 absolute top-1/2 right-2 h-8 w-8 -translate-y-1/2 rounded-lg transition-all duration-200 disabled:opacity-50"
                       >
                         {isPending ? (
-                          <LoaderCircle className="w-4 h-4 animate-spin" />
+                          <LoaderCircle className="h-4 w-4 animate-spin" />
                         ) : (
-                          <Send className="w-4 h-4" />
+                          <Send className="h-4 w-4" />
                         )}
                       </Button>
                     </div>

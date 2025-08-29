@@ -26,6 +26,7 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 import useLoginByEmail from "../hooks/useLoginByEmail";
 import OtpInputDialog from "./OtpInputDialog";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   email: z.email(),
@@ -59,9 +60,12 @@ const LoginWithEmail: React.FC = () => {
         setModalOtp(true);
         setFormData(values);
         form.reset();
+      } else {
+        toast.warning(res?.message || "Something Wrong");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log("error:", error);
+      toast.warning(error?.message || "Something Wrong");
     }
   };
 
