@@ -8,4 +8,4 @@ const formatString = (string) => {
   const badWords = ["damn", "bullshit"];
   const splittedString = removeWhiteSpace.split(" ");
   return splittedString.filter(s => !badWords.includes(s)).join(" ")
-};
+}
